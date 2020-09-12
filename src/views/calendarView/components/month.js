@@ -40,7 +40,7 @@ const Month = ({ month, year }) => {
         <Day key={`disabled-${disabledDay}`} disabled day={disabledDay} />
       ))}
       {getNormalDays().map((day) => (
-        <Day key={`enabled-${day}`} day={day} />
+        <Day key={`enabled-${day}`} day={day} month={month} year={year} />
       ))}
       {getRightDisabledDays().map((disabledDay) => (
         <Day key={`disabled-${disabledDay}`} disabled day={disabledDay} />
