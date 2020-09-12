@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Toolbar from '@material-ui/core/Toolbar';
 import HeadBar from './components/headBar';
 import Month from './components/month';
@@ -13,8 +13,8 @@ const CalendarView = () => {
     return actualDate.getFullYear();
   };
 
-  const [selectedMonth, setSelectedMonth] = useState(getActualMonth());
-  const [selectedYear, setSelectedYear] = useState(getActualYear());
+  const selectedMonth = getActualMonth();
+  const selectedYear = getActualYear();
 
   return (
     <React.Fragment>
