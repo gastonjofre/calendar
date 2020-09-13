@@ -8,7 +8,10 @@ import {
   Typography,
   CardActionArea,
   Drawer,
+  IconButton,
 } from '@material-ui/core';
+import DeleteIcon from '@material-ui/icons/DeleteForeverOutlined';
+import ConfirmationModal from 'components/confirmationModal';
 import ReminderFrom from './reminderForm';
 import ReminderInfo from './reminderInfo';
 
@@ -29,6 +32,9 @@ const styles = () => ({
   drawer: {
     width: drawerWidth,
   },
+  clickable: {
+    cursor: 'pointer',
+  },
 });
 
 const sortRemindersByHour = (a, b) => {
@@ -48,6 +54,8 @@ const Day = ({ classes, disabled, day, month, year }) => {
   const [showReminderAddEdit, setShowReminderAddEdit] = useState(false);
   const [reminders, setReminders] = useState([]);
   const [reminder, setReminder] = useState(null);
+  const [numberHover, setNumberHover] = useState(false);
+  const [showConfirmDeleteAll, setShowConfirmDeleteAll] = useState(false);
   const reminderDate = new Date(year, month, day);
 
   const addOrEditReminder = (reminderToEdit) => {
@@ -90,19 +98,44 @@ const Day = ({ classes, disabled, day, month, year }) => {
     setReminders([...reminders]);
   };
 
+  const showDeleteAllRemindersButton = () => numberHover && reminders.length > 0 && !disabled;
+
+  const deleteAllReminders = () => {
+    setShowConfirmDeleteAll(false);
+    setReminders([]);
+  };
   return (
     <>
       <Card className={classes.root} variant="outlined">
         <CardContent className={classes.content}>
           <Grid container direction="column" justify="center" alignItems="stretch">
-            <Typography className={classes.title} color="textSecondary" gutterBottom align="center">
-              {day}
+            <Typography
+              className={classes.title}
+              color="textSecondary"
+              gutterBottom={!showDeleteAllRemindersButton()}
+              align="center"
+              onMouseEnter={() => setNumberHover(true)}
+              onMouseLeave={() => setNumberHover(false)}
+            >
+              {showDeleteAllRemindersButton() ? (
+                <IconButton
+                  aria-label="delete"
+                  className={classes.margin}
+                  size="small"
+                  onClick={() => setShowConfirmDeleteAll(true)}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              ) : (
+                day
+              )}
             </Typography>
             {!disabled &&
               reminders.map((reminderIterator, index) => (
                 <Card
                   key={`${reminderIterator.title}-${index}`}
                   style={{ backgroundColor: reminderIterator.color.hex }}
+                  className={classes.clickable}
                   onClick={() => showReminderInfoDrawer({ ...reminderIterator, index })}
                 >
                   {/* TODO: COMING SOON: New component */}
@@ -124,6 +157,13 @@ const Day = ({ classes, disabled, day, month, year }) => {
           </CardActionArea>
         )}
       </Card>
+      {showConfirmDeleteAll && (
+        <ConfirmationModal
+          onConfirm={deleteAllReminders}
+          onCancel={() => setShowConfirmDeleteAll(false)}
+          title="Are you sure you want to delete ALL the reminders for this day?"
+        />
+      )}
       <Drawer
         open={showReminderInfo || showReminderAddEdit}
         anchor="right"
