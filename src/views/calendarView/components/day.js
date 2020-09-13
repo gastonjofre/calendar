@@ -35,6 +35,12 @@ const styles = () => ({
   clickable: {
     cursor: 'pointer',
   },
+  disabled: {
+    minWidth: '14%',
+    borderRadius: 0,
+    height: '16.75vh',
+    background: '#EBEBE4',
+  },
 });
 
 const sortRemindersByHour = (a, b) => {
@@ -106,7 +112,7 @@ const Day = ({ classes, disabled, day, month, year }) => {
   };
   return (
     <>
-      <Card className={classes.root} variant="outlined">
+      <Card className={disabled ? classes.disabled : classes.root} variant="outlined">
         <CardContent className={classes.content}>
           <Grid container direction="column" justify="center" alignItems="stretch">
             <Typography
