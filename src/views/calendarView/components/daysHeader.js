@@ -6,11 +6,12 @@ import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import days from 'constants/days';
 
-const styles = () => ({
+const styles = (theme) => ({
   root: {
     minWidth: '14%',
     'max-height': '5vh',
     'border-radius': 0,
+    background: theme.palette.primary.light,
   },
   title: {
     fontSize: 13,
@@ -29,7 +30,7 @@ const DaysHeader = ({ classes }) =>
   ));
 
 DaysHeader.propTypes = {
-  classes: PropTypes.object.isRequired,
+  classes: PropTypes.instanceOf(Object).isRequired,
 };
 
 export default withStyles(styles)(DaysHeader);
