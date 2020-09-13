@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles, Grid, TextField, Button, Typography } from '@material-ui/core';
 import { CirclePicker } from 'react-color';
+import { get } from 'lodash';
 
 const styles = (theme) => ({
   title: {
@@ -20,26 +21,17 @@ const styles = (theme) => ({
   },
 });
 
-const ReminderForm = ({ classes, date, saveReminder }) => {
-  const [title, setTitle] = useState('');
-  const [time, setTime] = useState('09:30');
-  const [city, setCity] = useState('');
+const ReminderForm = ({ classes, date, saveReminder, reminder }) => {
+  const [title, setTitle] = useState(get(reminder, 'title', ''));
+  const [time, setTime] = useState(get(reminder, 'time', '09:30'));
+  const [city, setCity] = useState(get(reminder, 'city', ''));
   const [errorTitle, setErrorTitle] = useState(false);
-  const [color, setColor] = useState({
-    hex: '#607d8b',
-    source: 'hex',
-  });
-
-  const onSaveReminder = () => {
-    if (title.length <= 0) {
-      setErrorTitle(true);
-    }
-
-    if (title.length <= 30 && title.length > 0) {
-      saveReminder({ title, time, date, city, color });
-      cleanState();
-    }
-  };
+  const [color, setColor] = useState(
+    get(reminder, 'color', {
+      hex: '#607d8b',
+      source: 'hex',
+    })
+  );
 
   const cleanState = () => {
     setTitle('');
@@ -50,6 +42,25 @@ const ReminderForm = ({ classes, date, saveReminder }) => {
       source: 'hex',
     });
   };
+
+  const onSaveReminder = () => {
+    if (title.length <= 0) {
+      setErrorTitle(true);
+    }
+
+    if (title.length <= 30 && title.length > 0) {
+      saveReminder({
+        title,
+        time,
+        date,
+        city,
+        color,
+        index: get(reminder, 'index', null),
+      });
+      cleanState();
+    }
+  };
+
   const changeTitle = (e) => {
     setErrorTitle(e.target.value.length > 30);
     setTitle(e.target.value);
@@ -121,9 +132,14 @@ const ReminderForm = ({ classes, date, saveReminder }) => {
 };
 
 ReminderForm.propTypes = {
-  classes: PropTypes.object.isRequired,
+  classes: PropTypes.instanceOf(Object).isRequired,
   date: PropTypes.instanceOf(Date).isRequired,
   saveReminder: PropTypes.func.isRequired,
+  reminder: PropTypes.instanceOf(Object),
+};
+
+ReminderForm.defaultProps = {
+  reminder: {},
 };
 
 export default withStyles(styles)(ReminderForm);

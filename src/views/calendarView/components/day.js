@@ -10,10 +10,11 @@ import {
   Drawer,
 } from '@material-ui/core';
 import ReminderFrom from './reminderForm';
+import ReminderInfo from './reminderInfo';
 
 const drawerWidth = 300;
 
-const styles = (theme) => ({
+const styles = () => ({
   root: {
     minWidth: '14%',
     borderRadius: 0,
@@ -30,18 +31,63 @@ const styles = (theme) => ({
   },
 });
 
+const sortRemindersByHour = (a, b) => {
+  const x = a.time.toLowerCase();
+  const y = b.time.toLowerCase();
+  if (x < y) {
+    return -1;
+  }
+  if (x > y) {
+    return 1;
+  }
+  return 0;
+};
+
 const Day = ({ classes, disabled, day, month, year }) => {
-  const [showCreateReminder, setShowCreateReminder] = useState(false);
+  const [showReminderInfo, setShowReminderInfo] = useState(false);
+  const [showReminderAddEdit, setShowReminderAddEdit] = useState(false);
   const [reminders, setReminders] = useState([]);
+  const [reminder, setReminder] = useState(null);
   const reminderDate = new Date(year, month, day);
 
-  const addOrEditReminder = () => {
-    setShowCreateReminder(true);
+  const addOrEditReminder = (reminderToEdit) => {
+    setReminder(reminderToEdit);
+    setShowReminderAddEdit(true);
+    setShowReminderInfo(false);
   };
 
-  const saveReminder = (reminder) => {
-    setReminders([...reminders, reminder]);
-    setShowCreateReminder(false);
+  const saveReminder = (newReminder) => {
+    if (!reminder) {
+      const newReminders = [...reminders, newReminder];
+      newReminders.sort(sortRemindersByHour);
+      setReminders(newReminders);
+    } else {
+      const editedReminder = { ...newReminder };
+      delete editedReminder.index;
+      const newReminders = [...reminders];
+      newReminders[newReminder.index] = editedReminder;
+      newReminders.sort(sortRemindersByHour);
+      setReminders([...newReminders]);
+    }
+    setShowReminderAddEdit(false);
+  };
+
+  const closeReminderInfo = () => {
+    setReminder(null);
+    setShowReminderInfo(false);
+    setShowReminderAddEdit(false);
+  };
+
+  const showReminderInfoDrawer = (reminderToShow) => {
+    setReminder(reminderToShow);
+    setShowReminderInfo(true);
+    setShowReminderAddEdit(false);
+  };
+
+  const deleteReminder = (reminderToDelete) => {
+    closeReminderInfo();
+    reminders.splice(reminderToDelete.index, 1);
+    setReminders([...reminders]);
   };
 
   return (
@@ -53,10 +99,11 @@ const Day = ({ classes, disabled, day, month, year }) => {
               {day}
             </Typography>
             {!disabled &&
-              reminders.map((reminder, index) => (
+              reminders.map((reminderIterator, index) => (
                 <Card
-                  key={`${reminder.title}-${index}`}
-                  style={{ backgroundColor: reminder.color.hex }}
+                  key={`${reminderIterator.title}-${index}`}
+                  style={{ backgroundColor: reminderIterator.color.hex }}
+                  onClick={() => showReminderInfoDrawer({ ...reminderIterator, index })}
                 >
                   {/* TODO: COMING SOON: New component */}
                   <Typography
@@ -65,32 +112,41 @@ const Day = ({ classes, disabled, day, month, year }) => {
                     gutterBottom
                     align="center"
                   >
-                    {reminder.title}
+                    {reminderIterator.title}
                   </Typography>
                 </Card>
               ))}
           </Grid>
         </CardContent>
         {!disabled && (
-          <CardActionArea onClick={addOrEditReminder}>
-            <CardContent></CardContent>
+          <CardActionArea onClick={() => addOrEditReminder(null)}>
+            <CardContent />
           </CardActionArea>
         )}
       </Card>
       <Drawer
-        open={showCreateReminder}
+        open={showReminderInfo || showReminderAddEdit}
         anchor="right"
-        onClose={() => setShowCreateReminder(false)}
+        onClose={closeReminderInfo}
         classes={{ paper: classes.drawer }}
       >
-        <ReminderFrom date={reminderDate} saveReminder={saveReminder} />
+        {showReminderInfo && (
+          <ReminderInfo
+            reminder={reminder}
+            editReminder={() => addOrEditReminder(reminder)}
+            deleteReminder={deleteReminder}
+          />
+        )}
+        {showReminderAddEdit && (
+          <ReminderFrom date={reminderDate} reminder={reminder} saveReminder={saveReminder} />
+        )}
       </Drawer>
     </>
   );
 };
 
 Day.propTypes = {
-  classes: PropTypes.object.isRequired,
+  classes: PropTypes.instanceOf(Object).isRequired,
   disabled: PropTypes.bool,
   day: PropTypes.number.isRequired,
   month: PropTypes.number,
