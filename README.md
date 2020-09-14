@@ -35,6 +35,7 @@ npm start
 - [react-color](https://casesandberg.github.io/react-color/) - A Collection of Color Pickers.
 - [react-app-polyfill](https://github.com/facebook/create-react-app/blob/master/packages/react-app-polyfill/README.md) - Package includes polyfills for various browsers. 
 - [source-map-explorer](https://www.npmjs.com/package/source-map-explorer) - Analyze and debug JavaScript bundles code bloat through source maps.
+- Tests dependencies - [Enzyme](https://enzymejs.github.io/enzyme/), jest-enzyme, react-rest-renderer, [@testing-library/react](https://testing-library.com/docs/react-testing-library/intro), [jest](https://jestjs.io/) and [wait-for-expect](https://www.npmjs.com/package/wait-for-expect)
 
 ## Notes
 - This project was bootstrapped with [Create React App](https://create-react-app.dev/)

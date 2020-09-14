@@ -116,7 +116,7 @@ const ReminderForm = ({ classes, date, saveReminder, reminder }) => {
       </Grid>
       <Grid item className={classes.container} container direction="row" justify="center">
         <Typography className={classes.title} color="textSecondary" gutterBottom align="center">
-          {`${'Color'}`}
+          Color
         </Typography>
       </Grid>
       <Grid item className={classes.container} container direction="row" justify="center">
