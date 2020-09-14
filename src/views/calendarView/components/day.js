@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
 import {
   withStyles,
@@ -11,6 +11,8 @@ import {
   IconButton,
 } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/DeleteForeverOutlined';
+import { get, assign } from 'lodash';
+import RemindersContext from 'contexts/remindersContext';
 import ConfirmationModal from 'components/confirmationModal';
 import ReminderFrom from './reminderForm';
 import ReminderInfo from './reminderInfo';
@@ -56,13 +58,17 @@ const sortRemindersByHour = (a, b) => {
 };
 
 const Day = ({ classes, disabled, day, month, year }) => {
+  const remindersContext = useContext(RemindersContext);
   const [showReminderInfo, setShowReminderInfo] = useState(false);
   const [showReminderAddEdit, setShowReminderAddEdit] = useState(false);
-  const [reminders, setReminders] = useState([]);
   const [reminder, setReminder] = useState(null);
   const [numberHover, setNumberHover] = useState(false);
   const [showConfirmDeleteAll, setShowConfirmDeleteAll] = useState(false);
   const reminderDate = new Date(year, month, day);
+  const allReminders = { ...remindersContext };
+  delete allReminders.updateReminders;
+  const reminders = get(remindersContext, `${year}.${month}.${day}`, []);
+  const setReminders = remindersContext.updateReminders;
 
   const addOrEditReminder = (reminderToEdit) => {
     setReminder(reminderToEdit);
@@ -74,14 +80,34 @@ const Day = ({ classes, disabled, day, month, year }) => {
     if (!reminder) {
       const newReminders = [...reminders, newReminder];
       newReminders.sort(sortRemindersByHour);
-      setReminders(newReminders);
+      const newAllReminders = { ...allReminders };
+      assign(newAllReminders, {
+        [year]: {
+          ...get(allReminders, `${year}`, {}),
+          [month]: {
+            ...get(allReminders, `${year}.${month}`, {}),
+            [day]: newReminders,
+          },
+        },
+      });
+      setReminders(newAllReminders);
     } else {
       const editedReminder = { ...newReminder };
       delete editedReminder.index;
       const newReminders = [...reminders];
       newReminders[newReminder.index] = editedReminder;
       newReminders.sort(sortRemindersByHour);
-      setReminders([...newReminders]);
+      const newAllReminders = { ...allReminders };
+      assign(newAllReminders, {
+        [year]: {
+          ...get(allReminders, `${year}`, {}),
+          [month]: {
+            ...get(allReminders, `${year}.${month}`, {}),
+            [day]: newReminders,
+          },
+        },
+      });
+      setReminders(newAllReminders);
     }
     setShowReminderAddEdit(false);
   };
@@ -101,15 +127,48 @@ const Day = ({ classes, disabled, day, month, year }) => {
   const deleteReminder = (reminderToDelete) => {
     closeReminderInfo();
     reminders.splice(reminderToDelete.index, 1);
-    setReminders([...reminders]);
+    const newAllReminders = { ...allReminders };
+    assign(newAllReminders, {
+      [year]: {
+        ...get(allReminders, `${year}`, {}),
+        [month]: {
+          ...get(allReminders, `${year}.${month}`, {}),
+          [day]: reminders,
+        },
+      },
+    });
+    setReminders(newAllReminders);
   };
 
   const showDeleteAllRemindersButton = () => numberHover && reminders.length > 0 && !disabled;
 
   const deleteAllReminders = () => {
     setShowConfirmDeleteAll(false);
-    setReminders([]);
+    const newAllReminders = { ...allReminders };
+    assign(newAllReminders, {
+      [year]: {
+        ...get(allReminders, `${year}`, {}),
+        [month]: {
+          ...get(allReminders, `${year}.${month}`, {}),
+          [day]: [],
+        },
+      },
+    });
+    setReminders(newAllReminders);
   };
+
+  const cleanState = () => {
+    setShowReminderInfo(false);
+    setShowReminderAddEdit(false);
+    setReminder(null);
+    setNumberHover(false);
+    setShowConfirmDeleteAll(false);
+  };
+
+  useEffect(() => {
+    cleanState();
+  }, [month, year]);
+
   return (
     <>
       <Card className={disabled ? classes.disabled : classes.root} variant="outlined">
