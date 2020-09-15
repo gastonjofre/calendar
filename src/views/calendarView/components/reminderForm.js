@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles, Grid, TextField, Button, Typography } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -70,7 +70,7 @@ const ReminderForm = ({ classes, date, saveReminder, reminder, day, month, year 
     setTitle(e.target.value);
   };
 
-  const fetchCities = () => {
+  const fetchCities = useCallback(() => {
     if (cityAux.length >= 3) {
       const apiDomain = `https://api.weatherapi.com/v1/search.json?key=${process.env.REACT_APP_WEATHER_API_KEY}&q=${cityAux}`;
       fetch(apiDomain)
@@ -81,11 +81,11 @@ const ReminderForm = ({ classes, date, saveReminder, reminder, day, month, year 
           setCities(myJson);
         });
     }
-  };
+  }, [cityAux]);
 
   useEffect(() => {
     fetchCities();
-  }, [cityAux]);
+  }, [cityAux, fetchCities]);
 
   return (
     <Grid container direction="column" justify="flex-start" alignItems="stretch" spacing={3}>

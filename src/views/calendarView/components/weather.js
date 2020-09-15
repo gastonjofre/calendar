@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles, Grid, Card, CardContent, Typography, Avatar } from '@material-ui/core';
 
@@ -29,7 +29,7 @@ const DaysHeader = ({ classes, day, month, year, city }) => {
   const weatherDate = new Date(year, month, day);
   const [weather, setWeather] = useState(null);
 
-  const fetchWeather = () => {
+  const fetchWeather = useCallback(() => {
     if (city !== '') {
       const diffDays = moment(weatherDate).diff(actualDate, 'days') + 1;
       const cityAux = city.split(',')[0];
@@ -94,11 +94,11 @@ const DaysHeader = ({ classes, day, month, year, city }) => {
           });
       }
     }
-  };
+  }, [city, actualDate, weatherDate]);
 
   useEffect(() => {
     fetchWeather();
-  }, [city]);
+  }, [city, fetchWeather]);
 
   return (
     weather && (
@@ -166,11 +166,13 @@ DaysHeader.propTypes = {
   day: PropTypes.number.isRequired,
   month: PropTypes.number,
   year: PropTypes.number,
+  city: PropTypes.string,
 };
 
 DaysHeader.defaultProps = {
   month: 0,
   year: 0,
+  city: '',
 };
 
 export default withStyles(styles)(DaysHeader);
