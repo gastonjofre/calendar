@@ -33,15 +33,17 @@ const apiDomain = 'https://api.weatherapi.com/v1/';
 const DaysHeader = ({ classes, day, month, year, city }) => {
   const actualDate = new Date();
   actualDate.setHours(0, 0, 0, 0);
-  const weatherDate = new Date(year, month, day);
   const [weather, setWeather] = useState(null);
 
   const fetchWeather = useCallback(() => {
     if (city !== '') {
-      const diffDays = moment(weatherDate).diff(actualDate, 'days') + 1;
+      const actualDateAux = new Date();
+      actualDateAux.setHours(0, 0, 0, 0);
+      const weatherDateAux = new Date(year, month, day);
+      const diffDays = moment(weatherDateAux).diff(actualDateAux, 'days') + 1;
       const cityAux = city.split(',')[0];
 
-      if (moment(actualDate).isBefore(weatherDate) && diffDays <= 10) {
+      if (moment(actualDateAux).isBefore(weatherDateAux) && diffDays <= 10) {
         fetch(
           `${apiDomain}forecast.json?key=${process.env.REACT_APP_WEATHER_API_KEY}&q=${cityAux}&days=${diffDays}`
         )
@@ -52,23 +54,25 @@ const DaysHeader = ({ classes, day, month, year, city }) => {
             if (!('error' in myJson)) {
               const weathersAux = get(myJson, 'forecast.forecastday', []);
               const newWeather = weathersAux.find((weatherIterator) =>
-                moment(weatherIterator.date).isSame(weatherDate)
+                moment(weatherIterator.date).isSame(weatherDateAux)
               );
-              setWeather({
-                condition: get(newWeather, 'day.condition', {}),
-                max_temp: get(newWeather, 'day.maxtemp_c', null),
-                min_temp: get(newWeather, 'day.mintemp_c', null),
-                current_temp: null,
-              });
+              if (newWeather) {
+                setWeather({
+                  condition: get(newWeather, 'day.condition', {}),
+                  max_temp: get(newWeather, 'day.maxtemp_c', null),
+                  min_temp: get(newWeather, 'day.mintemp_c', null),
+                  current_temp: null,
+                });
+              }
             }
           });
       }
 
-      if (moment(actualDate).isAfter(weatherDate) && diffDays <= 30) {
+      if (moment(actualDateAux).isAfter(weatherDateAux) && diffDays <= 30) {
         fetch(
           `${apiDomain}history.json?key=${
             process.env.REACT_APP_WEATHER_API_KEY
-          }&q=${cityAux}&dt=${moment(weatherDate).format('YYYY-MM-DD')}`
+          }&q=${cityAux}&dt=${moment(weatherDateAux).format('YYYY-MM-DD')}`
         )
           .then((response) => {
             return response.json();
@@ -77,19 +81,21 @@ const DaysHeader = ({ classes, day, month, year, city }) => {
             if (!('error' in myJson)) {
               const weathersAux = get(myJson, 'forecast.forecastday', []);
               const newWeather = weathersAux.find((weatherIterator) =>
-                moment(weatherIterator.date).isSame(weatherDate)
+                moment(weatherIterator.date).isSame(weatherDateAux)
               );
-              setWeather({
-                condition: get(newWeather, 'day.condition', {}),
-                max_temp: get(newWeather, 'day.maxtemp_c', null),
-                min_temp: get(newWeather, 'day.mintemp_c', null),
-                current_temp: null,
-              });
+              if (newWeather) {
+                setWeather({
+                  condition: get(newWeather, 'day.condition', {}),
+                  max_temp: get(newWeather, 'day.maxtemp_c', null),
+                  min_temp: get(newWeather, 'day.mintemp_c', null),
+                  current_temp: null,
+                });
+              }
             }
           });
       }
 
-      if (moment(actualDate).isSame(weatherDate)) {
+      if (moment(actualDateAux).isSame(weatherDateAux)) {
         fetch(`${apiDomain}current.json?key=${process.env.REACT_APP_WEATHER_API_KEY}&q=${cityAux}`)
           .then((response) => {
             return response.json();
@@ -107,11 +113,11 @@ const DaysHeader = ({ classes, day, month, year, city }) => {
           });
       }
     }
-  }, [city, actualDate, weatherDate]);
+  }, [city, year, month, day]);
 
   useEffect(() => {
     fetchWeather();
-  }, [city]);
+  }, [city, fetchWeather]);
 
   return (
     <Grid container direction="column" justify="center" alignItems="stretch">
