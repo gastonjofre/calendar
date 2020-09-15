@@ -1,12 +1,14 @@
+/* eslint-disable no-undef */
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles, Grid, Card, CardContent, Typography, Avatar } from '@material-ui/core';
+import { withStyles, Grid, Card, Typography, Avatar } from '@material-ui/core';
 
 import moment from 'moment';
 import { get } from 'lodash';
 
 const styles = (theme) => ({
   weatherCard: {
+    boxShadow: theme.shadows[5],
     marginLeft: theme.spacing(3),
     marginRight: theme.spacing(3),
   },
@@ -19,6 +21,11 @@ const styles = (theme) => ({
     fontSize: 13,
     marginLeft: theme.spacing(3),
     marginRight: theme.spacing(3),
+  },
+  warning: {
+    fontSize: 15,
+    marginTop: theme.spacing(5),
+    marginBottom: theme.spacing(5),
   },
 });
 const apiDomain = 'https://api.weatherapi.com/v1/';
@@ -42,16 +49,19 @@ const DaysHeader = ({ classes, day, month, year, city }) => {
             return response.json();
           })
           .then((myJson) => {
-            const weathersAux = get(myJson, 'forecast.forecastday', []);
-            const newWeather = weathersAux.find((weatherIterator) =>
-              moment(weatherIterator.date).isSame(weatherDate)
-            );
-            setWeather({
-              condition: get(newWeather, 'day.condition', {}),
-              max_temp: get(newWeather, 'day.maxtemp_c', null),
-              min_temp: get(newWeather, 'day.mintemp_c', null),
-              current_temp: null,
-            });
+            console.log(!('error' in myJson));
+            if (!('error' in myJson)) {
+              const weathersAux = get(myJson, 'forecast.forecastday', []);
+              const newWeather = weathersAux.find((weatherIterator) =>
+                moment(weatherIterator.date).isSame(weatherDate)
+              );
+              setWeather({
+                condition: get(newWeather, 'day.condition', {}),
+                max_temp: get(newWeather, 'day.maxtemp_c', null),
+                min_temp: get(newWeather, 'day.mintemp_c', null),
+                current_temp: null,
+              });
+            }
           });
       }
 
@@ -65,16 +75,19 @@ const DaysHeader = ({ classes, day, month, year, city }) => {
             return response.json();
           })
           .then((myJson) => {
-            const weathersAux = get(myJson, 'forecast.forecastday', []);
-            const newWeather = weathersAux.find((weatherIterator) =>
-              moment(weatherIterator.date).isSame(weatherDate)
-            );
-            setWeather({
-              condition: get(newWeather, 'day.condition', {}),
-              max_temp: get(newWeather, 'day.maxtemp_c', null),
-              min_temp: get(newWeather, 'day.mintemp_c', null),
-              current_temp: null,
-            });
+            console.log(!('error' in myJson));
+            if (!('error' in myJson)) {
+              const weathersAux = get(myJson, 'forecast.forecastday', []);
+              const newWeather = weathersAux.find((weatherIterator) =>
+                moment(weatherIterator.date).isSame(weatherDate)
+              );
+              setWeather({
+                condition: get(newWeather, 'day.condition', {}),
+                max_temp: get(newWeather, 'day.maxtemp_c', null),
+                min_temp: get(newWeather, 'day.mintemp_c', null),
+                current_temp: null,
+              });
+            }
           });
       }
 
@@ -84,13 +97,16 @@ const DaysHeader = ({ classes, day, month, year, city }) => {
             return response.json();
           })
           .then((myJson) => {
-            const newWeather = get(myJson, 'current', {});
-            setWeather({
-              condition: get(newWeather, 'condition', {}),
-              max_temp: null,
-              min_temp: null,
-              current_temp: newWeather.temp_c,
-            });
+            console.log(!('error' in myJson));
+            if (!('error' in myJson)) {
+              const newWeather = get(myJson, 'current', {});
+              setWeather({
+                condition: get(newWeather, 'condition', {}),
+                max_temp: null,
+                min_temp: null,
+                current_temp: newWeather.temp_c,
+              });
+            }
           });
       }
     }
@@ -98,66 +114,66 @@ const DaysHeader = ({ classes, day, month, year, city }) => {
 
   useEffect(() => {
     fetchWeather();
-  }, [city, fetchWeather]);
+  }, [city]);
 
   return (
-    weather && (
-      <Grid container direction="column" justify="center" alignItems="stretch">
-        <Card key={`header-${day}`} className={classes.weatherCard}>
-          <CardContent>
-            {weather && (
-              <Grid container direction="row" justify="center" alignItems="center">
-                <Grid item xs={3}>
-                  <Avatar
-                    alt={get(weather, 'condition.text', '')}
-                    src={get(weather, 'condition.icon', '')}
-                  />
-                </Grid>
-                <Grid item xs={9}>
+    <Grid container direction="column" justify="center" alignItems="stretch">
+      <Card key={`header-${day}`} className={classes.weatherCard}>
+        {weather !== null ? (
+          <Grid container direction="row" justify="center" alignItems="center" spacing={2}>
+            <Grid item xs={3}>
+              <Avatar
+                alt={get(weather, 'condition.text', '')}
+                src={get(weather, 'condition.icon', '')}
+              />
+            </Grid>
+            <Grid item xs={9}>
+              <Typography
+                className={classes.title}
+                color="textSecondary"
+                gutterBottom
+                align="center"
+              >
+                {get(weather, 'condition.text', '')}
+              </Typography>
+              {weather.current_temp ? (
+                <Typography
+                  className={classes.subtitle}
+                  color="textSecondary"
+                  gutterBottom
+                  align="center"
+                >
+                  {`Current temp: ${weather.current_temp} °C`}
+                </Typography>
+              ) : (
+                <>
                   <Typography
-                    className={classes.title}
+                    className={classes.subtitle}
                     color="textSecondary"
                     gutterBottom
                     align="center"
                   >
-                    {get(weather, 'condition.text', '')}
+                    {`Max. temp: ${weather.max_temp} °C`}
                   </Typography>
-                  {weather.current_temp ? (
-                    <Typography
-                      className={classes.subtitle}
-                      color="textSecondary"
-                      gutterBottom
-                      align="center"
-                    >
-                      {`Current temp: ${weather.current_temp} °C`}
-                    </Typography>
-                  ) : (
-                    <>
-                      <Typography
-                        className={classes.subtitle}
-                        color="textSecondary"
-                        gutterBottom
-                        align="center"
-                      >
-                        {`Max. temp: ${weather.max_temp} °C`}
-                      </Typography>
-                      <Typography
-                        className={classes.subtitle}
-                        color="textSecondary"
-                        gutterBottom
-                        align="center"
-                      >
-                        {`Min. temp: ${weather.min_temp} °C`}
-                      </Typography>
-                    </>
-                  )}
-                </Grid>
-              </Grid>
-            )}
-          </CardContent>
-        </Card>
-      </Grid>
-    )
+                  <Typography
+                    className={classes.subtitle}
+                    color="textSecondary"
+                    gutterBottom
+                    align="center"
+                  >
+                    {`Min. temp: ${weather.min_temp} °C`}
+                  </Typography>
+                </>
+              )}
+            </Grid>
+          </Grid>
+        ) : (
+          <Typography className={classes.warning} color="textSecondary" gutterBottom align="center">
+            Weather not available for this day
+          </Typography>
+        )}
+      </Card>
+    </Grid>
   );
 };
 

@@ -12,26 +12,32 @@ import {
 } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/DeleteForeverOutlined';
 import { get, assign } from 'lodash';
+import moment from 'moment';
 import RemindersContext from 'contexts/remindersContext';
 import ConfirmationModal from 'components/confirmationModal';
 import ReminderFrom from './reminderForm';
 import ReminderInfo from './reminderInfo';
 import Reminders from './reminders';
 
-const drawerWidth = 300;
+const drawerWidth = 350;
 
-const styles = () => ({
+const styles = (theme) => ({
   root: {
     width: '13%',
     minWidth: '13%',
     borderRadius: 0,
-    height: '16.75vh',
   },
   content: {
     padding: '1px',
   },
   title: {
     fontSize: 14,
+    height: '22%',
+  },
+  actualDay: {
+    borderRadius: '50%',
+    background: theme.palette.primary.light,
+    padding: '3px',
   },
   drawer: {
     width: drawerWidth,
@@ -40,7 +46,6 @@ const styles = () => ({
     width: '13%',
     minWidth: '13%',
     borderRadius: 0,
-    height: '16.75vh',
     background: '#EBEBE4',
   },
 });
@@ -57,7 +62,7 @@ const sortRemindersByHour = (a, b) => {
   return 0;
 };
 
-const Day = ({ classes, disabled, day, month, year }) => {
+const Day = ({ classes, disabled, day, month, year, height }) => {
   const remindersContext = useContext(RemindersContext);
   const [showReminderInfo, setShowReminderInfo] = useState(false);
   const [showReminderAddEdit, setShowReminderAddEdit] = useState(false);
@@ -165,13 +170,42 @@ const Day = ({ classes, disabled, day, month, year }) => {
     setShowConfirmDeleteAll(false);
   };
 
+  const isActualDay = () => {
+    const acutalDay = new Date();
+    return moment(acutalDay).isSame(reminderDate, 'day');
+  };
+
+  const getHeightAction = () => {
+    let heightAction;
+    const diffLength = reminders.length >= 3 ? 3 : reminders.length;
+
+    switch (height) {
+      case '21vh':
+        heightAction = `${85 - 17 * diffLength}%`;
+        break;
+      case '16vh':
+        heightAction = `${75 - 20 * diffLength}%`;
+        break;
+      case '14vh':
+        heightAction = `${69 - 20 * diffLength}%`;
+        break;
+      default:
+        break;
+    }
+    return heightAction;
+  };
+
   useEffect(() => {
     cleanState();
   }, [month, year]);
 
   return (
     <>
-      <Card className={disabled ? classes.disabled : classes.root} variant="outlined">
+      <Card
+        className={disabled ? classes.disabled : classes.root}
+        style={{ height }}
+        variant="outlined"
+      >
         <CardContent className={classes.content}>
           <Grid container direction="column" justify="center" alignItems="stretch">
             <Typography
@@ -185,26 +219,29 @@ const Day = ({ classes, disabled, day, month, year }) => {
               {showDeleteAllRemindersButton() ? (
                 <IconButton
                   aria-label="delete"
-                  className={classes.margin}
                   size="small"
                   onClick={() => setShowConfirmDeleteAll(true)}
                 >
                   <DeleteIcon />
                 </IconButton>
               ) : (
-                day
+                <span className={isActualDay() ? classes.actualDay : undefined}>{day}</span>
               )}
             </Typography>
             {!disabled && (
-              <Reminders reminders={reminders} showReminderInfo={showReminderInfoDrawer} />
+              <Reminders
+                reminders={reminders}
+                showReminderInfo={showReminderInfoDrawer}
+                height={height}
+              />
             )}
           </Grid>
         </CardContent>
         {!disabled && (
           <CardActionArea
             style={{
-              height: `${80 - 20 * (reminders.length >= 3 ? 3 : reminders.length)}%`,
-              maxHeight: `${80 - 20 * (reminders.length >= 3 ? 3 : reminders.length)}%`,
+              height: getHeightAction(),
+              maxHeight: getHeightAction(),
             }}
             onClick={() => addOrEditReminder(null)}
           >
@@ -216,7 +253,7 @@ const Day = ({ classes, disabled, day, month, year }) => {
         <ConfirmationModal
           onConfirm={deleteAllReminders}
           onCancel={() => setShowConfirmDeleteAll(false)}
-          title="Are you sure you want to delete ALL the reminders for this day?"
+          title="Are you sure you want to delete ALL the reminders?"
         />
       )}
       <Drawer
@@ -253,12 +290,14 @@ Day.propTypes = {
   day: PropTypes.number.isRequired,
   month: PropTypes.number,
   year: PropTypes.number,
+  height: PropTypes.string,
 };
 
 Day.defaultProps = {
   disabled: false,
   month: 0,
   year: 0,
+  height: '16.75vh',
 };
 
 export default withStyles(styles)(Day);
