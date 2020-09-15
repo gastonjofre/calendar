@@ -1,31 +1,53 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
+import { withStyles, Grid, Card, Typography } from '@material-ui/core';
 import days from 'constants/days';
 
 const styles = (theme) => ({
   root: {
-    minWidth: '14%',
+    minWidth: '13%',
+    width: '13%',
     'max-height': '5vh',
     'border-radius': 0,
     background: theme.palette.primary.light,
   },
-  title: {
-    fontSize: 13,
+  shortTitle: {
+    display: 'inline',
+    [theme.breakpoints.up('md')]: {
+      display: 'none',
+    },
+  },
+  longTitle: {
+    display: 'none',
+    [theme.breakpoints.up('md')]: {
+      display: 'inline',
+    },
   },
 });
 
 const DaysHeader = ({ classes }) =>
   days.map((day) => (
-    <Card key={`header-${day}`} className={classes.root} variant="outlined">
-      <CardContent>
-        <Typography className={classes.title} color="textSecondary" gutterBottom align="center">
-          {day}
+    <Card key={`header-${day.short}`} className={classes.root} variant="outlined">
+      <Grid container direction="column" justify="center" alignItems="stretch">
+        <Typography
+          variant="subtitle1"
+          className={classes.longTitle}
+          color="textSecondary"
+          gutterBottom
+          align="center"
+        >
+          {day.long}
         </Typography>
-      </CardContent>
+        <Typography
+          variant="body2"
+          className={classes.shortTitle}
+          color="textSecondary"
+          gutterBottom
+          align="center"
+        >
+          {day.short}
+        </Typography>
+      </Grid>
     </Card>
   ));
 

@@ -16,17 +16,19 @@ import RemindersContext from 'contexts/remindersContext';
 import ConfirmationModal from 'components/confirmationModal';
 import ReminderFrom from './reminderForm';
 import ReminderInfo from './reminderInfo';
+import Reminders from './reminders';
 
 const drawerWidth = 300;
 
 const styles = () => ({
   root: {
-    minWidth: '14%',
+    width: '13%',
+    minWidth: '13%',
     borderRadius: 0,
     height: '16.75vh',
   },
   content: {
-    padding: '0px',
+    padding: '1px',
   },
   title: {
     fontSize: 14,
@@ -34,11 +36,9 @@ const styles = () => ({
   drawer: {
     width: drawerWidth,
   },
-  clickable: {
-    cursor: 'pointer',
-  },
   disabled: {
-    minWidth: '14%',
+    width: '13%',
+    minWidth: '13%',
     borderRadius: 0,
     height: '16.75vh',
     background: '#EBEBE4',
@@ -195,29 +195,19 @@ const Day = ({ classes, disabled, day, month, year }) => {
                 day
               )}
             </Typography>
-            {!disabled &&
-              reminders.map((reminderIterator, index) => (
-                <Card
-                  key={`${reminderIterator.title}-${index}`}
-                  style={{ backgroundColor: reminderIterator.color.hex }}
-                  className={classes.clickable}
-                  onClick={() => showReminderInfoDrawer({ ...reminderIterator, index })}
-                >
-                  {/* TODO: COMING SOON: New component */}
-                  <Typography
-                    className={classes.title}
-                    color="textSecondary"
-                    gutterBottom
-                    align="center"
-                  >
-                    {reminderIterator.title}
-                  </Typography>
-                </Card>
-              ))}
+            {!disabled && (
+              <Reminders reminders={reminders} showReminderInfo={showReminderInfoDrawer} />
+            )}
           </Grid>
         </CardContent>
         {!disabled && (
-          <CardActionArea onClick={() => addOrEditReminder(null)}>
+          <CardActionArea
+            style={{
+              height: `${80 - 20 * (reminders.length >= 3 ? 3 : reminders.length)}%`,
+              maxHeight: `${80 - 20 * (reminders.length >= 3 ? 3 : reminders.length)}%`,
+            }}
+            onClick={() => addOrEditReminder(null)}
+          >
             <CardContent />
           </CardActionArea>
         )}
@@ -243,7 +233,14 @@ const Day = ({ classes, disabled, day, month, year }) => {
           />
         )}
         {showReminderAddEdit && (
-          <ReminderFrom date={reminderDate} reminder={reminder} saveReminder={saveReminder} />
+          <ReminderFrom
+            date={reminderDate}
+            reminder={reminder}
+            saveReminder={saveReminder}
+            day={day}
+            month={month}
+            year={year}
+          />
         )}
       </Drawer>
     </>
