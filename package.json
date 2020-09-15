@@ -27,7 +27,8 @@
     "react-color": "^2.18.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.3",
-    "react-test-renderer": "^16.13.1"
+    "react-test-renderer": "^16.13.1",
+    "source-map-explorer": "^2.5.0"
   },
   "homepage": "/calendar",
   "devDependencies": {
@@ -42,7 +43,6 @@
     "eslint-plugin-react-hooks": "^4.0.0",
     "jest": "^24.9.0",
     "prettier": "^2.1.1",
-    "source-map-explorer": "^2.5.0",
     "wait-for-expect": "^3.0.2"
   },
   "browserslist": {
