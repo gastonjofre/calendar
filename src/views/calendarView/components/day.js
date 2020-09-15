@@ -243,7 +243,14 @@ const Day = ({ classes, disabled, day, month, year }) => {
           />
         )}
         {showReminderAddEdit && (
-          <ReminderFrom date={reminderDate} reminder={reminder} saveReminder={saveReminder} />
+          <ReminderFrom
+            date={reminderDate}
+            reminder={reminder}
+            saveReminder={saveReminder}
+            day={day}
+            month={month}
+            year={year}
+          />
         )}
       </Drawer>
     </>

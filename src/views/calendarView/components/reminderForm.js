@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles, Grid, TextField, Button, Typography } from '@material-ui/core';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import { CirclePicker } from 'react-color';
 import { get } from 'lodash';
+import Weather from './weather';
 
 const styles = (theme) => ({
   title: {
-    fontSize: 13,
+    fontSize: 15,
     marginLeft: theme.spacing(3),
     marginRight: theme.spacing(3),
   },
@@ -21,11 +23,13 @@ const styles = (theme) => ({
   },
 });
 
-const ReminderForm = ({ classes, date, saveReminder, reminder }) => {
+const ReminderForm = ({ classes, date, saveReminder, reminder, day, month, year }) => {
   const [title, setTitle] = useState(get(reminder, 'title', ''));
   const [time, setTime] = useState(get(reminder, 'time', '09:30'));
   const [city, setCity] = useState(get(reminder, 'city', ''));
   const [errorTitle, setErrorTitle] = useState(false);
+  const [cities, setCities] = useState([]);
+  const [cityAux, setCityAux] = useState(get(reminder, 'city', ''));
   const [color, setColor] = useState(
     get(reminder, 'color', {
       hex: '#607d8b',
@@ -66,6 +70,23 @@ const ReminderForm = ({ classes, date, saveReminder, reminder }) => {
     setTitle(e.target.value);
   };
 
+  const fetchCities = () => {
+    if (cityAux.length >= 3) {
+      const apiDomain = `https://api.weatherapi.com/v1/search.json?key=${process.env.REACT_APP_WEATHER_API_KEY}&q=${cityAux}`;
+      fetch(apiDomain)
+        .then((response) => {
+          return response.json();
+        })
+        .then((myJson) => {
+          setCities(myJson);
+        });
+    }
+  };
+
+  useEffect(() => {
+    fetchCities();
+  }, [cityAux]);
+
   return (
     <Grid container direction="column" justify="flex-start" alignItems="stretch" spacing={3}>
       <Grid item className={classes.container}>
@@ -104,16 +125,39 @@ const ReminderForm = ({ classes, date, saveReminder, reminder }) => {
         />
       </Grid>
       <Grid item className={classes.container}>
-        <TextField
-          id="city-input"
-          label="City"
-          value={city}
+        <Autocomplete
+          id="city-auto-input"
+          options={cities}
           fullWidth
-          onChange={(e) => setCity(e.target.value)}
+          getOptionLabel={(option) => option.name}
+          // helperText="At least 3 chars"
           className={classes.input}
+          inputValue={cityAux}
           margin="normal"
+          onInputChange={(event, newInputValue) => {
+            if (event) {
+              if (event.type === 'change') {
+                setCityAux(newInputValue !== undefined ? newInputValue : '');
+              }
+              if (event.type === 'click') {
+                setCity(newInputValue !== undefined ? newInputValue : '');
+                setCityAux(newInputValue !== undefined ? newInputValue : '');
+              }
+            }
+          }}
+          renderInput={(params) => <TextField {...params} label="City" />}
         />
       </Grid>
+      {city && (
+        <Grid item className={classes.container} container direction="row" justify="center">
+          <Grid item className={classes.container} container direction="row" justify="center">
+            <Typography className={classes.title} color="textSecondary" gutterBottom align="center">
+              Weather
+            </Typography>
+          </Grid>
+          <Weather day={day} month={month} year={year} city={city} />
+        </Grid>
+      )}
       <Grid item className={classes.container} container direction="row" justify="center">
         <Typography className={classes.title} color="textSecondary" gutterBottom align="center">
           Color
@@ -136,10 +180,15 @@ ReminderForm.propTypes = {
   date: PropTypes.instanceOf(Date).isRequired,
   saveReminder: PropTypes.func.isRequired,
   reminder: PropTypes.instanceOf(Object),
+  day: PropTypes.number.isRequired,
+  month: PropTypes.number,
+  year: PropTypes.number,
 };
 
 ReminderForm.defaultProps = {
   reminder: {},
+  month: 0,
+  year: 0,
 };
 
 export default withStyles(styles)(ReminderForm);
