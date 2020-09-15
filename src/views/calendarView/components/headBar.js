@@ -32,28 +32,28 @@ const HeadBar = ({ classes, month, year, setNewMonth, setNewYear }) => {
   };
 
   return (
-      <AppBar position="fixed" className={classes.appBar}>
-        <Toolbar className={classes.toolbar}>
-          <div>
-            <Typography
-              variant="h5"
-              className={classes.monthYearText}
-              display="inline"
-              color="primary"
-            >
-              {`${monthsNames[month]} ${year}`}
-            </Typography>
-          </div>
-          <div>
-            <IconButton aria-label="left" onClick={() => onChangeMonth(month - 1)}>
-              <ChevronLeftIcon />
-            </IconButton>
-            <IconButton aria-label="right" onClick={() => onChangeMonth(month + 1)}>
-              <ChevronRightIcon />
-            </IconButton>
-          </div>
-        </Toolbar>
-      </AppBar>
+    <AppBar position="fixed" className={classes.appBar}>
+      <Toolbar className={classes.toolbar}>
+        <div>
+          <Typography
+            variant="h5"
+            className={classes.monthYearText}
+            display="inline"
+            color="primary"
+          >
+            {`${monthsNames[month]} ${year}`}
+          </Typography>
+        </div>
+        <div>
+          <IconButton aria-label="left" onClick={() => onChangeMonth(month - 1)}>
+            <ChevronLeftIcon />
+          </IconButton>
+          <IconButton aria-label="right" onClick={() => onChangeMonth(month + 1)}>
+            <ChevronRightIcon />
+          </IconButton>
+        </div>
+      </Toolbar>
+    </AppBar>
   );
 };
 

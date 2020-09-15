@@ -192,17 +192,22 @@ const Day = ({ classes, disabled, day, month, year }) => {
                   <DeleteIcon />
                 </IconButton>
               ) : (
-                  day
-                )}
+                day
+              )}
             </Typography>
-            {!disabled && <Reminders reminders={reminders} showReminderInfo={showReminderInfoDrawer} />}
+            {!disabled && (
+              <Reminders reminders={reminders} showReminderInfo={showReminderInfoDrawer} />
+            )}
           </Grid>
         </CardContent>
         {!disabled && (
-          <CardActionArea style={{
-            height: `${80 - (20 * (reminders.length >= 3 ? 3 : reminders.length))}%`,
-            maxHeight: `${80 - (20 * (reminders.length >= 3 ? 3 : reminders.length))}%`,
-          }} onClick={() => addOrEditReminder(null)}>
+          <CardActionArea
+            style={{
+              height: `${80 - 20 * (reminders.length >= 3 ? 3 : reminders.length)}%`,
+              maxHeight: `${80 - 20 * (reminders.length >= 3 ? 3 : reminders.length)}%`,
+            }}
+            onClick={() => addOrEditReminder(null)}
+          >
             <CardContent />
           </CardActionArea>
         )}
