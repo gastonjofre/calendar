@@ -17,7 +17,9 @@ Install it and run:
 
 ```sh
 npm install
+create the .env file using .env-template
 npm start
+
 ```
 
 ## Features
