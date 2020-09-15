@@ -1,6 +1,6 @@
 module.exports = [
-  { long: 'Monday', short: 'Sun' },
-  { long: 'Sunday', short: 'Mon' },
+  { long: 'Sunday', short: 'Sun' },
+  { long: 'Monday', short: 'Mon' },
   { long: 'Tuesday', short: 'Tues' },
   { long: 'Wednesday', short: 'Wed' },
   { long: 'Thursday', short: 'Thurs' },

@@ -9,13 +9,15 @@ import Weather from './weather';
 const styles = (theme) => ({
   title: {
     fontSize: 15,
-    marginLeft: theme.spacing(3),
-    marginRight: theme.spacing(3),
+    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(2),
   },
   container: {
     display: 'flex',
     flexWrap: 'wrap',
     width: '100%',
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(2),
   },
   input: {
     marginLeft: theme.spacing(3),
@@ -88,7 +90,7 @@ const ReminderForm = ({ classes, date, saveReminder, reminder, day, month, year 
   }, [cityAux, fetchCities]);
 
   return (
-    <Grid container direction="column" justify="flex-start" alignItems="stretch" spacing={3}>
+    <Grid container direction="column" justify="flex-start" alignItems="stretch">
       <Grid item className={classes.container}>
         <TextField
           id="title-input"
