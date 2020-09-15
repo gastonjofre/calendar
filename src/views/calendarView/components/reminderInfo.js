@@ -10,22 +10,23 @@ import PaletteIcon from '@material-ui/icons/PaletteOutlined';
 import ConfirmationModal from 'components/confirmationModal';
 import { get } from 'lodash';
 import Divider from '@material-ui/core/Divider';
+import Weather from './weather';
 
 const styles = (theme) => ({
   title: {
-    fontSize: 25,
-    marginLeft: theme.spacing(3),
-    marginRight: theme.spacing(3),
+    fontSize: 20,
+    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(2),
   },
   subtitle: {
-    fontSize: 20,
-    marginLeft: theme.spacing(3),
-    marginRight: theme.spacing(3),
+    fontSize: 15,
+    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(2),
   },
   content: {
-    fontSize: 15,
-    marginLeft: theme.spacing(3),
-    marginRight: theme.spacing(3),
+    fontSize: 13,
+    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(2),
   },
   container: {
     display: 'flex',
@@ -183,6 +184,29 @@ const ReminderInfo = ({ classes, reminder, deleteReminder, editReminder }) => {
           </Grid>
         </Grid>
         <Divider />
+        {reminder.city !== '' && (
+          <>
+            <Grid item className={classes.container} container direction="row" justify="center">
+              <Typography
+                className={classes.subtitle}
+                color="textSecondary"
+                gutterBottom
+                align="center"
+              >
+                Weather
+              </Typography>
+            </Grid>
+            <Grid item className={classes.container} container direction="row" justify="center">
+              <Weather
+                day={reminder.date.getDate()}
+                month={reminder.date.getMonth()}
+                year={reminder.date.getFullYear()}
+                city={reminder.city}
+              />
+            </Grid>
+            <Divider />
+          </>
+        )}
         <Grid item className={classes.container} container direction="row" justify="center">
           <Typography
             className={classes.subtitle}

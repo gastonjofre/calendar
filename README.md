@@ -35,6 +35,8 @@ npm start
 - [react-color](https://casesandberg.github.io/react-color/) - A Collection of Color Pickers.
 - [react-app-polyfill](https://github.com/facebook/create-react-app/blob/master/packages/react-app-polyfill/README.md) - Package includes polyfills for various browsers. 
 - [source-map-explorer](https://www.npmjs.com/package/source-map-explorer) - Analyze and debug JavaScript bundles code bloat through source maps.
+- Tests dependencies - [Enzyme](https://enzymejs.github.io/enzyme/), jest-enzyme, react-rest-renderer, [@testing-library/react](https://testing-library.com/docs/react-testing-library/intro), [jest](https://jestjs.io/) and [wait-for-expect](https://www.npmjs.com/package/wait-for-expect).
+- [Moment.js](https://momentjs.com/) - Library to manage dates
 
 ## Notes
 - This project was bootstrapped with [Create React App](https://create-react-app.dev/)
@@ -44,4 +46,6 @@ npm start
 - GitHub Pages - Pay attention to the "homepage" key in the package.json which is used for the GitHub Pages. This key must be the same as the name of the project.
 - GitHub Actions - The "predeploy" and "deploy" (package.json) scripts were added to deploy in GitHub Pages with GitHub Actions.
 - Analyse - The "analyse" (package.json) script were added to analyze javascript bundled with "source-map-explorer". To run it, first run "build" and then "analyze" scripts.
+- This project consumes the [weatherapi](https://www.weatherapi.com/), to consume the api, you need a key. Save this key on the .env file. Use the .env-template to create the .env file. 
+- The weather API on the deployed version, is a free version, therefore it has limitations on the days that can be searched.
 
