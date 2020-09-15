@@ -16,6 +16,10 @@ const styles = (theme) => ({
   monthYearText: {
     fontWeight: 500,
   },
+  changeMonth: {
+    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(2),
+  },
 });
 
 const HeadBar = ({ classes, month, year, setNewMonth, setNewYear }) => {
@@ -45,7 +49,11 @@ const HeadBar = ({ classes, month, year, setNewMonth, setNewYear }) => {
           </Typography>
         </div>
         <div>
-          <IconButton aria-label="left" onClick={() => onChangeMonth(month - 1)}>
+          <IconButton
+            aria-label="left"
+            className={classes.changeMonth}
+            onClick={() => onChangeMonth(month - 1)}
+          >
             <ChevronLeftIcon />
           </IconButton>
           <IconButton aria-label="right" onClick={() => onChangeMonth(month + 1)}>
