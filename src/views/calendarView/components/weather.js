@@ -49,7 +49,6 @@ const DaysHeader = ({ classes, day, month, year, city }) => {
             return response.json();
           })
           .then((myJson) => {
-            console.log(!('error' in myJson));
             if (!('error' in myJson)) {
               const weathersAux = get(myJson, 'forecast.forecastday', []);
               const newWeather = weathersAux.find((weatherIterator) =>
@@ -75,7 +74,6 @@ const DaysHeader = ({ classes, day, month, year, city }) => {
             return response.json();
           })
           .then((myJson) => {
-            console.log(!('error' in myJson));
             if (!('error' in myJson)) {
               const weathersAux = get(myJson, 'forecast.forecastday', []);
               const newWeather = weathersAux.find((weatherIterator) =>
@@ -97,7 +95,6 @@ const DaysHeader = ({ classes, day, month, year, city }) => {
             return response.json();
           })
           .then((myJson) => {
-            console.log(!('error' in myJson));
             if (!('error' in myJson)) {
               const newWeather = get(myJson, 'current', {});
               setWeather({
